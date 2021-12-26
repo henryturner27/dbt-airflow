@@ -1,0 +1,57 @@
+version: 2
+
+seeds:
+  - name: users
+    description: table of users
+    docs:
+      show: true
+    columns:
+      - name: user_id
+        description: primary key of this table
+        quote: false
+      - name: first_name
+        description: user's first name
+        quote: true
+      - name: last_name
+        description: user's last name
+        quote: true
+      - name: country_code
+        description: first recorded geo location of the user
+        quote: true
+      - name: created_at
+        description: timestamp of installation
+        quote: true
+  - name: payments
+    description: fact table containing payments
+    docs:
+      show: true
+    columns:
+      - name: payment_id
+        description: primary key of this table
+        quote: false
+      - name: user_id
+        description: user id of user that made the payment
+        quote: false
+      - name: price
+        description: amount paid
+        quote: false
+      - name: created_at
+        description: timestamp of the transaction
+        quote: true
+  - name: sessions
+    description: table of sessions
+    docs:
+      show: true
+    columns:
+      - name: session_id
+        description: primary key of this table
+        quote: false
+      - name: user_id
+        description: id of the user
+        quote: false
+      - name: created_at
+        description: timestamp the session started at
+        quote: true
+      - name: ended_at
+        description: timestamp the session ended at
+        quote: true
