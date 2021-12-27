@@ -1,0 +1,10 @@
+
+    
+    create table "dbt"."dev"."orders" ("order_id" integer,"user_id" integer,"product_id" integer,"created_at" date)
+  ;
+    -- dbt seed --
+    
+          insert into "dbt"."dev"."orders" ("order_id", "user_id", "product_id", "created_at") values
+          (%s,%s,%s,%s),(%s,%s,%s,%s),(%s,%s,%s,%s),(%s,%s,%s,%s),(%s,%s,%s,%s)
+      
+  

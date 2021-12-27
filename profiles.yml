@@ -1,4 +1,4 @@
-bungie_dwh:
+dwh:
   target: dev
   outputs:
     dev:
@@ -8,5 +8,5 @@ bungie_dwh:
       password: example_pw
       port: 5432
       dbname: dbt
-      schema: dev
-      threads: 1
+      schema: dev_hturner
+      threads: 2

@@ -1,0 +1,10 @@
+
+    
+    create table "dbt"."dev"."sessions" ("session_id" integer,"user_id" integer,"created_at" timestamp without time zone,"ended_at" timestamp without time zone)
+  ;
+    -- dbt seed --
+    
+          insert into "dbt"."dev"."sessions" ("session_id", "user_id", "created_at", "ended_at") values
+          (%s,%s,%s,%s),(%s,%s,%s,%s),(%s,%s,%s,%s),(%s,%s,%s,%s)
+      
+  

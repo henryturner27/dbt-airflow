@@ -1,0 +1,10 @@
+
+    
+    create table "dbt"."dev_hturner_src"."payments" ("payment_id" integer,"user_id" integer,"price" float8,"created_at" timestamp without time zone)
+  ;
+    -- dbt seed --
+    
+          insert into "dbt"."dev_hturner_src"."payments" ("payment_id", "user_id", "price", "created_at") values
+          (%s,%s,%s,%s),(%s,%s,%s,%s),(%s,%s,%s,%s)
+      
+  

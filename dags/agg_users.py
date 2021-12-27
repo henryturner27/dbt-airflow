@@ -18,18 +18,18 @@ with DAG(dag_name, default_args=default_args, schedule_interval=None) as dag:
 
     stage_task = BashOperator(
         task_id=f'dbt_run-{dag_name}_stage',
-        bash_command='cd ~/bungie_dwh && dbt run -m {dag_name}_stage --vars \'{{"ds":"{{{{ ds }}}}"}}\''.format(
+        bash_command='cd ~/dwh && dbt run -m {dag_name}_stage --vars \'{{"ds":"{{{{ ds }}}}"}}\''.format(
             dag_name=dag_name),
         dag=dag)
 
     test_task = BashOperator(
         task_id=f'dbt_test-{dag_name}',
-        bash_command=f'cd ~/bungie_dwh && dbt test -m {dag_name}_stage',
+        bash_command=f'cd ~/dwh && dbt test -m {dag_name}_stage',
         dag=dag)
 
     load_task = BashOperator(
         task_id=f'dbt_run-{dag_name}',
-        bash_command='cd ~/bungie_dwh && dbt run -m {dag_name} --vars \'{{"ds":"{{{{ ds }}}}"}}\''.format(
+        bash_command='cd ~/dwh && dbt run -m {dag_name} --vars \'{{"ds":"{{{{ ds }}}}"}}\''.format(
             dag_name=dag_name),
         dag=dag)
 

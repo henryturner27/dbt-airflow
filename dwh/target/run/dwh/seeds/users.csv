@@ -1,0 +1,10 @@
+
+    
+    create table "dbt"."dev_hturner_src"."users" ("user_id" integer,"first_name" text,"last_name" text,"country_code" text,"created_at" timestamp without time zone)
+  ;
+    -- dbt seed --
+    
+          insert into "dbt"."dev_hturner_src"."users" ("user_id", "first_name", "last_name", "country_code", "created_at") values
+          (%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s),(%s,%s,%s,%s,%s)
+      
+  

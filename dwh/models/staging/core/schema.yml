@@ -18,7 +18,7 @@ models:
       - name: last_name
         description: Last name of the user
       - name: country_code
-        description: The initial counntry code recorded for a user
+        description: The initial country code recorded for a user
       - name: session_count
         description: Total number of sessions for that user up to that date
       - name: total_revenue
