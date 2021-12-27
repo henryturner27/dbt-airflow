@@ -5,19 +5,10 @@ models:
   - name: agg_users
     description: Calculates some aggregations at the user level
     columns:
-      - name: unique_key
-        description: Primary key of the table
-        tests:
-          - not_null
-          - unique
       - name: dt
         description: Date of concern
-        tests:
-          - not_null
       - name: user_id
         description: id of the user
-        tests:
-          - not_null
       - name: first_name
         description: First name of the user
       - name: last_name

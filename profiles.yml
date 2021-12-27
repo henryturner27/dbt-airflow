@@ -1,0 +1,12 @@
+bungie_dwh:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: dbtpostgres
+      user: dbt
+      password: example_pw
+      port: 5432
+      dbname: dbt
+      schema: dev
+      threads: 1

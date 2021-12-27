@@ -2,14 +2,9 @@
 version: 2
 
 models:
-  - name: agg_users
+  - name: agg_users_stage
     description: Calculates some aggregations at the user level
     columns:
-      - name: unique_key
-        description: Primary key of the table
-        tests:
-          - not_null
-          - unique
       - name: dt
         description: Date of concern
         tests:

@@ -1,0 +1,6 @@
+*.pyc
+*.vscode
+bungie_dwh/target/
+bungie_dwh/dbt_packages/
+bungie_dwh/logs/
+/logs
