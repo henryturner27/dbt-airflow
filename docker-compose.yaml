@@ -38,10 +38,20 @@ services:
         expose:
             - 6379
 
+    docs:
+        build: .
+        user: airflow
+        restart: always
+        ports:
+            - 8000:8000
+        volumes:
+            - ./dwh:/airflow/dwh
+        command: sh -c "sleep 5 && cd dwh && dbt docs generate --no-compile && dbt docs
+            serve --port 8000"
+
     flower:
         build: .
         container_name: flower
-        image: henryturner27/airflow
         user: airflow
         restart: always
         environment:
@@ -56,7 +66,6 @@ services:
     webserver:
         build: .
         container_name: webserver
-        image: henryturner27/airflow
         user: airflow
         restart: always
         environment:
@@ -67,14 +76,16 @@ services:
         ports:
             - 8080:8080
         volumes:
-          - ./dags:/airflow/dags
-          - ./dwh:/airflow/dwh
-        command: sh -c "sleep 5 && cd dwh && dbt seed && cd .. && airflow db init && airflow users create --role Admin --username admin --email admin@dairflow.com --firstname admin --lastname admin --password admin && airflow webserver"
+            - ./dags:/airflow/dags
+            - ./dwh:/airflow/dwh
+        command: sh -c "sleep 5 && cd dwh && dbt seed && cd .. && airflow db init &&
+            airflow users create --role Admin --username admin --email
+            admin@dairflow.com --firstname admin --lastname admin --password
+            admin && airflow webserver"
 
     scheduler:
         build: .
         container_name: scheduler
-        image: henryturner27/airflow
         user: airflow
         restart: always
         environment:
@@ -82,13 +93,12 @@ services:
         depends_on:
             - webserver
         volumes:
-          - ./dags:/airflow/dags
-          - ./dwh:/airflow/dwh
+            - ./dags:/airflow/dags
+            - ./dwh:/airflow/dwh
         command: sh -c "sleep 10 && airflow scheduler"
 
     worker:
         build: .
-        image: henryturner27/airflow
         user: airflow
         restart: always
         environment:
@@ -98,10 +108,10 @@ services:
         expose:
             - 8793
         volumes:
-          - ./dags:/airflow/dags
-          - ./dwh:/airflow/dwh
+            - ./dags:/airflow/dags
+            - ./dwh:/airflow/dwh
         command: sh -c "sleep 10 && airflow celery worker"
 
 volumes:
-    db_data:
-    dbt_data:
+    db_data: null
+    dbt_data: null
