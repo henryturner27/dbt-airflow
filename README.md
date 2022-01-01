@@ -1,19 +1,25 @@
-# Dockerized Airflow
+# Dockerized Airflow with DBT
 
 This is a dockerized implementation of the open-source job scheduler: [Airflow](https://airflow.apache.org). This uses the Celery message broker with Redis as a backend to support running multiple tasks in parallel.
 
 ### Requirements
 
-    • Docker
+* Docker
 
-### Build Local Copy
+### To Run
 
-    • docker-compose build
-    • docker-compose up -d --scale worker=2
+* docker-compose build
+* docker-compose up --scale worker=2
 
-This builds the postgres, redis, webserver, scheduler, flower, and 2 worker containers locally in the background.
+This builds the postgres, redis, webserver, scheduler, flower, docs, and 2 worker containers. You can find the web UI for some of these containers at the following addresses:
 
-    • docker-compose down (to shutdown)
+* airflow webserver: http://localhost:8080
+* airflow flower: http://localhost:5555
+* dbt docs: http://localhost:8000
+
+### Shutdown
+
+* docker-compose down
 
 ### Adding new DAGs
 
