@@ -46,8 +46,8 @@ services:
             - 8000:8000
         volumes:
             - ./dwh:/airflow/dwh
-        command: sh -c "sleep 5 && cd dwh && dbt docs generate --no-compile && dbt docs
-            serve --port 8000"
+        command: sh -c "sleep 5 && cd dwh && dbt docs generate --no-compile --vars
+            \'{\"ds_no_dash\":\"\"}\' && dbt docs serve --port 8000"
 
     flower:
         build: .
@@ -78,10 +78,10 @@ services:
         volumes:
             - ./dags:/airflow/dags
             - ./dwh:/airflow/dwh
-        command: sh -c "sleep 5 && cd dwh && dbt seed && cd .. && airflow db init &&
-            airflow users create --role Admin --username admin --email
-            admin@dairflow.com --firstname admin --lastname admin --password
-            admin && airflow webserver"
+        command: sh -c "sleep 5 && cd dwh && dbt seed --vars \'{\"ds_no_dash\":\"\"}\'
+            && cd .. && airflow db init && airflow users create --role Admin
+            --username admin --email admin@dairflow.com --firstname admin
+            --lastname admin --password admin && airflow webserver"
 
     scheduler:
         build: .
