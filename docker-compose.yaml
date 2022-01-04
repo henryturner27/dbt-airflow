@@ -42,6 +42,8 @@ services:
         build: .
         user: airflow
         restart: always
+        depends_on:
+            - dbtpostgres
         ports:
             - 8000:8000
         volumes:
