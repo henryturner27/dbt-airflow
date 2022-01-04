@@ -1,6 +1,7 @@
 {{
     config(
-        materialized='table'
+        materialized='table',
+        alias='agg_users_stage_' + var('ds_no_dash')
     )
 }}
 
