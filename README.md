@@ -8,8 +8,8 @@ This is a dockerized implementation of the open-source job scheduler: [Airflow](
 
 ### To Run
 
-* docker-compose build
-* docker-compose up --scale worker=2
+* `docker-compose build`
+* `docker-compose up --scale worker=2`
 
 This builds the postgres, redis, webserver, scheduler, flower, docs, and 2 worker containers. You can find the web UI for some of these containers at the following addresses:
 
@@ -17,9 +17,20 @@ This builds the postgres, redis, webserver, scheduler, flower, docs, and 2 worke
 * airflow flower: http://localhost:5555
 * dbt docs: http://localhost:8000
 
+You can connect to the postgres data warehouse in one of two ways:
+1. By stepping into the container and directly running psql commands
+    * `docker exec -it dbtpostgres bash` (to step into the container)
+    * `psql -U dbt -d dbt` (to connect to the DB)
+1. By connecting through localhost using your favorite database client
+    * host: localhost
+    * db: dbt
+    * port: 5432
+    * user: dbt
+    * pw: example_pw
+
 ### Shutdown
 
-* docker-compose down
+* `docker-compose down`
 
 ### Adding new DAGs
 
