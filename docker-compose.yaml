@@ -65,9 +65,10 @@ services:
         depends_on:
             - postgres
             - redis
+            - webserver
         ports:
             - 5555:5555
-        command: ./wait_for_it.sh postgres:5432 -- airflow celery flower
+        command: ./wait_for_it.sh webserver:8080 -- airflow celery flower
 
     webserver:
         build:
