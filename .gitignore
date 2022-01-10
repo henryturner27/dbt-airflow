@@ -4,4 +4,5 @@ dwh/target/
 dwh/dbt_packages/
 dwh/logs/
 logs/
-env/
+airflow_venv/
+dwh/dbt_venv/

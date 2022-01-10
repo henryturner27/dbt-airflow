@@ -18,19 +18,28 @@ with DAG(dag_name, default_args=default_args, schedule_interval=None) as dag:
 
     stage_task = BashOperator(
         task_id=f'dbt_run-{dag_name}_stage',
-        bash_command='cd ~/dwh && dbt run -m {dag_name}_stage --vars \'{{"ds":"{{{{ ds }}}}","ds_no_dash":"{{{{ ds_nodash }}}}"}}\''.format(
-            dag_name=dag_name),
+        bash_command='''
+                source ~/dbt_venv/bin/activate &&
+                cd ~/dwh &&
+                dbt run -m {dag_name}_stage --vars \'{{"ds":"{{{{ ds }}}}","ds_no_dash":"{{{{ ds_nodash }}}}"}}\'
+            '''.format(dag_name=dag_name),
         dag=dag)
 
     test_task = BashOperator(
         task_id=f'dbt_test-{dag_name}',
-        bash_command=f'cd ~/dwh && dbt test -m {dag_name}_stage --vars \'{{"ds_no_dash":"{{{{ ds_nodash }}}}"}}\'',
+        bash_command=f'''
+            source ~/dbt_venv/bin/activate &&
+            cd ~/dwh &&
+            dbt test -m {dag_name}_stage --vars \'{{"ds_no_dash":"{{{{ ds_nodash }}}}"}}\'''',
         dag=dag)
 
     load_task = BashOperator(
         task_id=f'dbt_run-{dag_name}',
-        bash_command='cd ~/dwh && dbt run -m {dag_name} --vars \'{{"ds":"{{{{ ds }}}}","ds_no_dash":"{{{{ ds_nodash }}}}"}}\''.format(
-            dag_name=dag_name),
+        bash_command='''
+                source ~/dbt_venv/bin/activate &&
+                cd ~/dwh &&
+                dbt run -m {dag_name} --vars \'{{"ds":"{{{{ ds }}}}","ds_no_dash":"{{{{ ds_nodash }}}}"}}\'
+            '''.format(dag_name=dag_name),
         dag=dag)
 
     end_task = DummyOperator(task_id='end_task')
