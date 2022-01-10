@@ -4,8 +4,8 @@ dwh:
     dev:
       type: postgres
       host: dbtpostgres
-      user: dbt
-      password: example_pw
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_PW') }}"
       port: 5432
       dbname: dbt
       schema: dev_hturner

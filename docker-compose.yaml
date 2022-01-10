@@ -1,5 +1,105 @@
 version: '3'
 services:
+    docs:
+        build:
+            dockerfile: docker/docs.dockerfile
+        working_dir: /docs/dwh
+        container_name: docs
+        user: docs
+        restart: always
+        environment:
+            - DBT_USER=dbt
+            - DBT_PW=example_pw
+        depends_on:
+            - dbtpostgres
+        ports:
+            - 8000:8000
+        command: |
+            bash -c "./wait_for_it.sh dbtpostgres:5432 -- dbt docs generate --vars \'{\"ds_no_dash\":\"\",\"ds\":\"2022-01-01\"}\' &&
+            dbt docs serve --port 8000"
+
+    flower:
+        build:
+            dockerfile: docker/airflow.dockerfile
+        working_dir: /airflow
+        container_name: flower
+        user: airflow
+        restart: always
+        environment:
+            - DBT_USER=dbt
+            - DBT_PW=example_pw
+        depends_on:
+            - postgres
+            - redis
+            - webserver
+        ports:
+            - 5555:5555
+        command: ./wait_for_it.sh webserver:8080 -- airflow celery flower
+
+    webserver:
+        build:
+            dockerfile: docker/airflow.dockerfile
+        working_dir: /airflow
+        container_name: webserver
+        user: airflow
+        restart: always
+        environment:
+            - DBT_USER=dbt
+            - DBT_PW=example_pw
+        depends_on:
+            - postgres
+            - redis
+            - dbtpostgres
+        ports:
+            - 8080:8080
+        volumes:
+            - ./airflow/dags:/airflow/dags
+            - ./dwh:/airflow/dwh
+        command: |
+            bash -c "./wait_for_it.sh postgres:5432 -- echo 'done waiting for postgres' &&
+            ./wait_for_it.sh dbtpostgres:5432 -- echo 'done waiting for dbtpostgres' &&
+            source ./airflow_venv/bin/activate &&
+            cd dwh &&
+            dbt seed --vars \'{\"ds_no_dash\":\"\"}\' &&
+            cd .. &&
+            airflow db init &&
+            airflow users create --role Admin --username admin --email admin@dairflow.com --firstname admin --lastname admin --password admin &&
+            airflow webserver"
+
+    scheduler:
+        build:
+            dockerfile: docker/airflow.dockerfile
+        working_dir: /airflow
+        container_name: scheduler
+        user: airflow
+        restart: always
+        environment:
+            - DBT_USER=dbt
+            - DBT_PW=example_pw
+        depends_on:
+            - webserver
+        volumes:
+            - ./airflow/dags:/airflow/dags
+            - ./dwh:/airflow/dwh
+        command: ./wait_for_it.sh webserver:8080 -- airflow scheduler
+
+    worker:
+        build:
+            dockerfile: docker/airflow.dockerfile
+        working_dir: /airflow
+        user: airflow
+        restart: always
+        environment:
+            - DBT_USER=dbt
+            - DBT_PW=example_pw
+        depends_on:
+            - scheduler
+            - flower
+        volumes:
+            - ./airflow/dags:/airflow/dags
+            - ./dwh:/airflow/dwh
+        command: ./wait_for_it.sh flower:5555 -- airflow celery worker
+    
     postgres:
         image: postgres:13
         container_name: postgres
@@ -37,101 +137,6 @@ services:
             - REDIS_PORT=6379
         expose:
             - 6379
-
-    docs:
-        build:
-            dockerfile: docs.dockerfile
-        working_dir: /docs/dwh
-        container_name: docs
-        user: docs
-        restart: always
-        depends_on:
-            - dbtpostgres
-        ports:
-            - 8000:8000
-        command: |
-            bash -c "./wait_for_it.sh dbtpostgres:5432 -- dbt docs generate --no-compile --vars \'{\"ds_no_dash\":\"\"}\' &&
-            dbt docs serve --port 8000"
-
-    flower:
-        build:
-            dockerfile: airflow.dockerfile
-        working_dir: /airflow
-        container_name: flower
-        user: airflow
-        restart: always
-        environment:
-            - EXECUTOR=CeleryExecutor
-        depends_on:
-            - postgres
-            - redis
-            - webserver
-        ports:
-            - 5555:5555
-        command: ./wait_for_it.sh webserver:8080 -- airflow celery flower
-
-    webserver:
-        build:
-            dockerfile: airflow.dockerfile
-        working_dir: /airflow
-        container_name: webserver
-        user: airflow
-        restart: always
-        environment:
-            - EXECUTOR=CeleryExecutor
-        depends_on:
-            - postgres
-            - redis
-            - dbtpostgres
-        ports:
-            - 8080:8080
-        volumes:
-            - ./dags:/airflow/dags
-            - ./dwh:/airflow/dwh
-        command: | 
-            bash -c "./wait_for_it.sh postgres:5432 -- echo 'done waiting for postgres' &&
-            ./wait_for_it.sh dbtpostgres:5432 -- echo 'done waiting for dbtpostgres' &&
-            source ./dbt_venv/bin/activate &&
-            cd dwh &&
-            dbt seed --vars \'{\"ds_no_dash\":\"\"}\' &&
-            deactivate &&
-            cd .. &&
-            source ./airflow_venv/bin/activate &&
-            airflow db init &&
-            airflow users create --role Admin --username admin --email admin@dairflow.com --firstname admin --lastname admin --password admin &&
-            airflow webserver"
-
-    scheduler:
-        build:
-            dockerfile: airflow.dockerfile
-        working_dir: /airflow
-        container_name: scheduler
-        user: airflow
-        restart: always
-        environment:
-            - EXECUTOR=CeleryExecutor
-        depends_on:
-            - webserver
-        volumes:
-            - ./dags:/airflow/dags
-            - ./dwh:/airflow/dwh
-        command: ./wait_for_it.sh webserver:8080 -- airflow scheduler
-
-    worker:
-        build:
-            dockerfile: airflow.dockerfile
-        working_dir: /airflow
-        user: airflow
-        restart: always
-        environment:
-            - EXECUTOR=CeleryExecutor
-        depends_on:
-            - scheduler
-            - flower
-        volumes:
-            - ./dags:/airflow/dags
-            - ./dwh:/airflow/dwh
-        command: ./wait_for_it.sh flower:5555 -- airflow celery worker
 
 volumes:
     db_data: null
