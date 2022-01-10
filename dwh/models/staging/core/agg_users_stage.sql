@@ -12,7 +12,8 @@ SELECT
   , a.last_name
   , a.country_code
   , COUNT(b.*) AS session_count
-  , SUM(c.price) AS total_revenue
+  , COALESCE(SUM(c.price), 0) AS total_revenue
+--   , CONCAT(a.first_name, ' ', a.last_name) AS first_last
 FROM {{ ref('users') }} a
 LEFT JOIN {{ ref('sessions') }} b
     ON a.user_id = b.user_id

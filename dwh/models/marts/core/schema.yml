@@ -19,3 +19,5 @@ models:
         description: Total number of sessions for that user up to that date
       - name: total_revenue
         description: Total amount of revenue generated for that user up to that date
+      # - name: first_last
+      #   description: First and last name of the user

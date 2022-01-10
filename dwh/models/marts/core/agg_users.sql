@@ -1,7 +1,8 @@
 {{
     config(
         materialized='incremental',
-        unique_key='dt'
+        unique_key='dt',
+        on_schema_change='sync_all_columns',
     )
 }}
 
