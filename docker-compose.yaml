@@ -7,15 +7,13 @@ services:
         container_name: docs
         user: docs
         restart: always
-        environment:
-            - DBT_USER=dbt
-            - DBT_PW=example_pw
+        env_file: docker/.env
         depends_on:
             - dbtpostgres
         ports:
             - 8000:8000
         command: |
-            bash -c "./wait_for_it.sh dbtpostgres:5432 -- dbt docs generate --vars \'{\"ds_no_dash\":\"\",\"ds\":\"2022-01-01\"}\' &&
+            bash -c "./wait_for_it.sh dbtpostgres:5432 -- dbt docs generate --vars \'{\"ds_no_dash\":\"\",\"ds\":\"\"}\' &&
             dbt docs serve --port 8000"
 
     flower:
@@ -25,9 +23,6 @@ services:
         container_name: flower
         user: airflow
         restart: always
-        environment:
-            - DBT_USER=dbt
-            - DBT_PW=example_pw
         depends_on:
             - postgres
             - redis
@@ -43,9 +38,7 @@ services:
         container_name: webserver
         user: airflow
         restart: always
-        environment:
-            - DBT_USER=dbt
-            - DBT_PW=example_pw
+        env_file: docker/.env
         depends_on:
             - postgres
             - redis
@@ -73,9 +66,7 @@ services:
         container_name: scheduler
         user: airflow
         restart: always
-        environment:
-            - DBT_USER=dbt
-            - DBT_PW=example_pw
+        env_file: docker/.env
         depends_on:
             - webserver
         volumes:
@@ -89,9 +80,7 @@ services:
         working_dir: /airflow
         user: airflow
         restart: always
-        environment:
-            - DBT_USER=dbt
-            - DBT_PW=example_pw
+        env_file: docker/.env
         depends_on:
             - scheduler
             - flower
@@ -112,21 +101,21 @@ services:
         expose:
             - 5432
         volumes:
-            - 'db_data:/var/lib/postgresql/data'
+            - db_data:/var/lib/postgresql/data
 
     dbtpostgres:
         image: postgres:13
         container_name: dbtpostgres
         restart: always
         environment:
-            - POSTGRES_USER=dbt
+            - POSTGRES_USER=first_last
             - POSTGRES_PASSWORD=example_pw
             - POSTGRES_HOST=postgres
-            - POSTGRES_DB=dbt
+            - POSTGRES_MULTIPLE_DATABASES=first_last,test,prod
         ports:
             - 5432:5432
         volumes:
-            - 'dbt_data:/var/lib/postgresql/data'
+            - dbt_data:/var/lib/postgresql/data
 
     redis:
         image: redis:6.0
