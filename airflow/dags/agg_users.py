@@ -1,10 +1,12 @@
 from datetime import datetime, timedelta
+
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.dummy import DummyOperator
 
 
-dag_name = 'agg_users'
+dag_name = 'core__agg_users'
+
 default_args = {
     'owner': 'airflow',
     'depends_on_past': False,
@@ -12,6 +14,7 @@ default_args = {
     'retry_delay': timedelta(seconds=15),
 }
 dag_args = {
+    'description': 'Calculates aggregations at the user level.',
     'start_date': datetime(2021, 12, 23),
     'schedule_interval': '@daily',
     'catchup': False,
@@ -27,14 +30,17 @@ with DAG(dag_name, default_args=default_args, **dag_args) as dag:
                 cd ~/dwh &&
                 dbt run -m {dag_name}_stage --vars \'{{"ds":"{{{{ ds }}}}","ds_no_dash":"{{{{ ds_nodash }}}}"}}\'
             ''',
-        dag=dag)
+        dag=dag
+    )
 
     test_task = BashOperator(
         task_id=f'dbt_test-{dag_name}',
         bash_command=f'''
-            cd ~/dwh &&
-            dbt test -m {dag_name}_stage --vars \'{{"ds_no_dash":"{{{{ ds_nodash }}}}"}}\'''',
-        dag=dag)
+                cd ~/dwh &&
+                dbt test -m {dag_name}_stage --vars \'{{"ds_no_dash":"{{{{ ds_nodash }}}}"}}\'
+            ''',
+        dag=dag
+    )
 
     load_task = BashOperator(
         task_id=f'dbt_run-{dag_name}',
@@ -42,7 +48,8 @@ with DAG(dag_name, default_args=default_args, **dag_args) as dag:
                 cd ~/dwh &&
                 dbt run -m {dag_name} --vars \'{{"ds":"{{{{ ds }}}}","ds_no_dash":"{{{{ ds_nodash }}}}"}}\'
             ''',
-        dag=dag)
+        dag=dag
+    )
 
     end_task = DummyOperator(task_id='end_task')
 
