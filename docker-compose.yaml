@@ -2,12 +2,12 @@ version: '3'
 services:
     docs:
         build:
-            dockerfile: docker/docs.dockerfile
+            dockerfile: local/docs.dockerfile
         working_dir: /docs/dwh
         container_name: docs
         user: docs
         restart: always
-        env_file: docker/.env
+        env_file: local/.env
         depends_on:
             - dbtpostgres
         ports:
@@ -18,7 +18,7 @@ services:
 
     flower:
         build:
-            dockerfile: docker/airflow.dockerfile
+            dockerfile: local/airflow.dockerfile
         working_dir: /airflow
         container_name: flower
         user: airflow
@@ -33,12 +33,12 @@ services:
 
     webserver:
         build:
-            dockerfile: docker/airflow.dockerfile
+            dockerfile: local/airflow.dockerfile
         working_dir: /airflow
         container_name: webserver
         user: airflow
         restart: always
-        env_file: docker/.env
+        env_file: local/.env
         depends_on:
             - postgres
             - redis
@@ -61,12 +61,12 @@ services:
 
     scheduler:
         build:
-            dockerfile: docker/airflow.dockerfile
+            dockerfile: local/airflow.dockerfile
         working_dir: /airflow
         container_name: scheduler
         user: airflow
         restart: always
-        env_file: docker/.env
+        env_file: local/.env
         depends_on:
             - webserver
         volumes:
@@ -76,11 +76,11 @@ services:
 
     worker:
         build:
-            dockerfile: docker/airflow.dockerfile
+            dockerfile: local/airflow.dockerfile
         working_dir: /airflow
         user: airflow
         restart: always
-        env_file: docker/.env
+        env_file: local/.env
         depends_on:
             - scheduler
             - flower

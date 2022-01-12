@@ -13,7 +13,7 @@ RUN ./airflow_venv/bin/pip install apache-airflow[postgres,celery,redis]==2.2.3 
 
 COPY airflow/airflow.cfg .
 COPY profiles.yml .dbt/profiles.yml
-COPY docker/wait_for_it.sh .
+COPY local/wait_for_it.sh .
 
 ENV PATH="/airflow/airflow_venv/bin:$PATH"
 RUN chown -R airflow: /airflow
