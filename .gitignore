@@ -1,5 +1,4 @@
 *.pyc
-*.vscode
 dwh/target/
 dwh/dbt_packages/
 dwh/logs/

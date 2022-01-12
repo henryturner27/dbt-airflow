@@ -1,0 +1,12 @@
+{
+    "python.pythonPath": "airflow_venv/bin/python",
+    "python.languageServer": "Pylance",
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": ["--max-line-length=90"],
+    "editor.formatOnSave": true,
+    "python.formatting.provider": "autopep8",
+    "python.formatting.autopep8Args": ["--max-line-length=90", "--aggressive", "--aggressive"],
+    "sql.linter.executablePath": "airflow_venv/bin/sqlfluff",
+    "sql.linter.run": "onType"
+}
