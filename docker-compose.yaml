@@ -15,7 +15,7 @@ services:
         volumes:
             - ./dwh:/docs/dwh
         command: |
-            bash -c "../wait_for_it.sh dbtpostgres:5432 -- dbt docs generate --vars \'{\"ds_nodash\":\"\",\"ds\":\"\"}\' &&
+            bash -c "../wait_for_it.sh dbtpostgres:5432 -- dbt docs generate --vars '{\"ds_nodash\":\"\",\"ds\":\"\"}' &&
             dbt docs serve --port 8000"
 
     flower:
@@ -55,7 +55,7 @@ services:
             ./wait_for_it.sh dbtpostgres:5432 -- echo 'done waiting for dbtpostgres' &&
             source ./airflow_venv/bin/activate &&
             cd dwh &&
-            dbt seed --vars \'{\"ds_nodash\":\"\"}\' &&
+            dbt seed --vars '{\"ds_nodash\":\"\"}' &&
             cd .. &&
             airflow db init &&
             airflow users create --role Admin --username admin --email admin@dairflow.com --firstname admin --lastname admin --password admin &&
