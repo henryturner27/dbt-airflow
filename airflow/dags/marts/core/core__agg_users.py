@@ -1,4 +1,6 @@
 from datetime import datetime, timedelta
+from json import dumps
+from os import getenv
 
 from airflow import DAG
 from airflow.operators.bash import BashOperator
@@ -6,6 +8,7 @@ from airflow.operators.dummy import DummyOperator
 
 
 dag_name = 'core__agg_users'
+dbt_name = dag_name.split('__')[1]
 
 default_args = {
     'owner': 'airflow',
@@ -20,6 +23,12 @@ dag_args = {
     'catchup': False,
     'max_active_runs': 10,
 }
+json_args = dumps(
+    {
+        'ds': '{{ ds }}',
+        'ds_nodash': '{{ ds_nodash }}',
+    }
+)
 
 with DAG(dag_name, default_args=default_args, **dag_args) as dag:
     start_task = DummyOperator(task_id='start_task')
@@ -28,7 +37,7 @@ with DAG(dag_name, default_args=default_args, **dag_args) as dag:
         task_id=f'dbt_run-{dag_name}_stage',
         bash_command=f'''
                 cd ~/dwh &&
-                dbt run -m {dag_name}_stage --vars \'{{"ds":"{{{{ ds }}}}","ds_no_dash":"{{{{ ds_nodash }}}}"}}\'
+                dbt run -m {dbt_name}_stage --vars '{json_args}'
             ''',
         dag=dag
     )
@@ -37,7 +46,7 @@ with DAG(dag_name, default_args=default_args, **dag_args) as dag:
         task_id=f'dbt_test-{dag_name}',
         bash_command=f'''
                 cd ~/dwh &&
-                dbt test -m {dag_name}_stage --vars \'{{"ds_no_dash":"{{{{ ds_nodash }}}}"}}\'
+                dbt test -m {dbt_name}_stage --store-failures --vars '{json_args}'
             ''',
         dag=dag
     )
@@ -46,11 +55,22 @@ with DAG(dag_name, default_args=default_args, **dag_args) as dag:
         task_id=f'dbt_run-{dag_name}',
         bash_command=f'''
                 cd ~/dwh &&
-                dbt run -m {dag_name} --vars \'{{"ds":"{{{{ ds }}}}","ds_no_dash":"{{{{ ds_nodash }}}}"}}\'
+                dbt run -m {dbt_name} --vars '{json_args}'
             ''',
         dag=dag
     )
 
     end_task = DummyOperator(task_id='end_task')
+
+    if (getenv('ENV') == 'dev'):
+        update_docs_task = BashOperator(
+            task_id=f'dbt_docs_generate-{dag_name}',
+            bash_command=f'''
+                cd ~/dwh &&
+                dbt docs generate --vars '{json_args}'
+                ''',
+            dag=dag
+        )
+        load_task >> update_docs_task >> end_task
 
     start_task >> stage_task >> test_task >> load_task >> end_task
