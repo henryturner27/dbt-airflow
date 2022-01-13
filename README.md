@@ -43,11 +43,12 @@ You can connect to the postgres data warehouse in one of two ways:
 
 In order to contribute you will need to setup your local development environment by installing [python 3.9](https://www.python.org/downloads/release/python-399) and creating a virtual environment at the root directory of this project, like so:
 
-- `python -m airflow_env .`
-- `./airflow_env/bin/pip install apache-airflow[postgres,celery,redis]==2.2.3 --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.2.3/constraints-3.9.txt"`
-- `./airflow_env/bin/pip install -r local/requirements-dev.txt`
+- `python3.9 -m venv airflow_venv`
+- `source ./airflow_venv/bin/activate`
+- `pip install 'apache-airflow[postgres,celery,redis]==2.2.3' --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.2.3/constraints-3.9.txt"`
+- `pip install -r local/requirements-dev.txt`
 
-And then set your python interpretor to ./airflow_env/bin/python in the IDE of your choice (this is set by default for VS Code users). Following these steps will give you access to intellisense as well as conforming your code to the auto-formatting and linting standards.
+You can now manually set your python interpretor to ./airflow_venv/bin/python, or close and re-open VS Code for it to be automatically set. Following these steps will give you access to intellisense as well as conforming your code to the auto-formatting and linting standards of this project.
 
 ### Adding new DAGs
 
