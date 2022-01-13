@@ -1,18 +1,18 @@
 {{
     config(
         materialized='table',
-        alias='agg_users_stage_' + var('ds_no_dash')
+        alias='agg_users_stage_' + var('ds_nodash'),
     )
 }}
 
 SELECT
-    '{{ var('ds') }}' AS dt,
+    '{{ var('ds') }}'::DATE AS dt,
     a.user_id,
     a.first_name,
     a.last_name,
     a.country_code,
-    COALESCE(SUM(c.price), 0) AS total_revenue,
-    COUNT(b.*) AS session_count
+    COUNT(b.*) AS session_count,
+    COALESCE(SUM(c.price), 0) AS total_revenue
 --   , CONCAT(a.first_name, ' ', a.last_name) AS first_last
 FROM {{ ref('users') }} AS a
 LEFT JOIN {{ ref('sessions') }} AS b

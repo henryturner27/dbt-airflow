@@ -7,5 +7,11 @@
 }}
 
 SELECT
-    *
+    dt,
+    user_id,
+    first_name,
+    last_name,
+    country_code::VARCHAR(2) AS country_code,
+    session_count,
+    total_revenue
 FROM {{ ref('agg_users_stage') }}
