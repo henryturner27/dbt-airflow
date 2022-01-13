@@ -2,6 +2,7 @@ version: '3'
 services:
     docs:
         build:
+            context: .
             dockerfile: local/docs.dockerfile
         working_dir: /docs/dwh
         container_name: docs
@@ -20,6 +21,7 @@ services:
 
     flower:
         build:
+            context: .
             dockerfile: local/airflow.dockerfile
         working_dir: /airflow
         container_name: flower
@@ -35,6 +37,7 @@ services:
 
     webserver:
         build:
+            context: .
             dockerfile: local/airflow.dockerfile
         working_dir: /airflow
         container_name: webserver
@@ -63,6 +66,7 @@ services:
 
     scheduler:
         build:
+            context: .
             dockerfile: local/airflow.dockerfile
         working_dir: /airflow
         container_name: scheduler
@@ -78,6 +82,7 @@ services:
 
     worker:
         build:
+            context: .
             dockerfile: local/airflow.dockerfile
         working_dir: /airflow
         user: airflow
