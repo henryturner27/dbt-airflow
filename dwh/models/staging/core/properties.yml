@@ -12,6 +12,7 @@ models:
       - name: user_id
         description: id of the user
         tests:
+          - unique
           - not_null
       - name: first_name
         description: First name of the user
@@ -19,6 +20,9 @@ models:
         description: Last name of the user
       - name: country_code
         description: The initial country code recorded for a user
+        tests:
+          - length:
+              len_val: 2
       - name: session_count
         description: Total number of sessions for that user up to that date
       - name: total_revenue
