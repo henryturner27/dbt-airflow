@@ -1,40 +1,5 @@
 version: '3'
 services:
-    docs:
-        build:
-            context: .
-            dockerfile: local/docs.dockerfile
-        working_dir: /docs/dwh
-        container_name: docs
-        user: docs
-        restart: always
-        env_file: local/.env
-        depends_on:
-            - dbtpostgres
-        ports:
-            - 8000:8000
-        volumes:
-            - ./dwh:/docs/dwh
-        command: |
-            bash -c "../wait_for_it.sh dbtpostgres:5432 -- dbt docs generate --vars '{\"ds_nodash\":\"\",\"ds\":\"\"}' &&
-            dbt docs serve --port 8000"
-
-    flower:
-        build:
-            context: .
-            dockerfile: local/airflow.dockerfile
-        working_dir: /airflow
-        container_name: flower
-        user: airflow
-        restart: always
-        depends_on:
-            - postgres
-            - redis
-            - webserver
-        ports:
-            - 5555:5555
-        command: ./wait_for_it.sh webserver:8080 -- airflow celery flower
-
     webserver:
         build:
             context: .
@@ -63,7 +28,7 @@ services:
             airflow db init &&
             airflow users create --role Admin --username admin --email admin@dairflow.com --firstname admin --lastname admin --password admin &&
             airflow webserver"
-
+    
     scheduler:
         build:
             context: .
@@ -79,6 +44,41 @@ services:
             - ./airflow/dags:/airflow/dags
             - ./dwh:/airflow/dwh
         command: ./wait_for_it.sh webserver:8080 -- airflow scheduler
+    
+    flower:
+        build:
+            context: .
+            dockerfile: local/airflow.dockerfile
+        working_dir: /airflow
+        container_name: flower
+        user: airflow
+        restart: always
+        depends_on:
+            - postgres
+            - redis
+            - webserver
+        ports:
+            - 5555:5555
+        command: ./wait_for_it.sh webserver:8080 -- airflow celery flower
+
+    docs:
+        build:
+            context: .
+            dockerfile: local/docs.dockerfile
+        working_dir: /docs/dwh
+        container_name: docs
+        user: docs
+        restart: always
+        env_file: local/.env
+        depends_on:
+            - dbtpostgres
+        ports:
+            - 8000:8000
+        volumes:
+            - ./dwh:/docs/dwh
+        command: |
+            bash -c "../wait_for_it.sh dbtpostgres:5432 -- dbt docs generate --vars '{\"ds_nodash\":\"\",\"ds\":\"\"}' &&
+            dbt docs serve --port 8000"
 
     worker:
         build:
