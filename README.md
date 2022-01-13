@@ -48,7 +48,7 @@ In order to contribute you will need to setup your local development environment
 - `pip install 'apache-airflow[postgres,celery,redis]==2.2.3' --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.2.3/constraints-3.9.txt"`
 - `pip install -r local/requirements-dev.txt`
 
-You can now manually set your python interpretor to ./airflow_venv/bin/python, or close and re-open VS Code for it to be automatically set. Following these steps will give you access to intellisense as well as conforming your code to the auto-formatting and linting standards of this project.
+You can now manually set your python interpretor to `airflow_venv/bin/python`, or close and re-open VS Code for it to be automatically set. Following these steps will give you access to intellisense as well as conforming your code to the auto-formatting and linting standards of this project.
 
 ### Adding new DAGs
 
