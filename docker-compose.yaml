@@ -118,7 +118,7 @@ services:
             - POSTGRES_USER=first_last
             - POSTGRES_PASSWORD=example_pw
             - POSTGRES_HOST=postgres
-            - POSTGRES_MULTIPLE_DATABASES=first_last,test,prod
+            - POSTGRES_DB=first_last
         ports:
             - 5432:5432
         volumes:
