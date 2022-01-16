@@ -16,4 +16,5 @@ COPY profiles.yml .dbt/profiles.yml
 COPY local/wait_for_it.sh .
 
 ENV PATH="/airflow/airflow_venv/bin:$PATH"
+ENV PYTHONPATH="/airflow/custom_operators:$PYTHONPATH"
 RUN chown -R airflow: /airflow

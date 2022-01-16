@@ -17,6 +17,7 @@ services:
             - 8080:8080
         volumes:
             - ./airflow/dags:/airflow/dags
+            - ./airflow/custom_operators:/airflow/custom_operators
             - ./dwh:/airflow/dwh
         command: |
             bash -c "./wait_for_it.sh postgres:5432 -- echo 'done waiting for postgres' &&
@@ -42,6 +43,7 @@ services:
             - webserver
         volumes:
             - ./airflow/dags:/airflow/dags
+            - ./airflow/custom_operators:/airflow/custom_operators
             - ./dwh:/airflow/dwh
         command: ./wait_for_it.sh webserver:8080 -- airflow scheduler
     
@@ -93,6 +95,7 @@ services:
             - flower
         volumes:
             - ./airflow/dags:/airflow/dags
+            - ./airflow/custom_operators:/airflow/custom_operators
             - ./dwh:/airflow/dwh
         command: ./wait_for_it.sh flower:5555 -- airflow celery worker
     
