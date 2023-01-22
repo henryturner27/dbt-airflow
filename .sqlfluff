@@ -19,6 +19,7 @@ sql_file_exts = .sql,.sql.j2,.dml,.ddl
 indented_joins = False
 indented_using_on = True
 template_blocks_indent = True
+indented_on_contents = False
 
 [sqlfluff:templater]
 unwrap_wrapped_queries = True
@@ -34,19 +35,21 @@ dbt_config = {% macro config() %}{% for k in kwargs %}{% endfor %}{% endmacro %}
 dbt_var = {% macro var(variable, default='') %}item{% endmacro %}
 dbt_is_incremental = {% macro is_incremental() %}True{% endmacro %}
 
+[sqlfluff:layout]
+comma_style = trailing
+operator_new_lines = after
+
 # Some rules can be configured directly from the config common to other rules.
 [sqlfluff:rules]
 tab_space_size = 4
 max_line_length = 90
 indent_unit = space
-comma_style = trailing
 allow_scalar = False
 single_table_references = unqualified
 unquoted_identifiers_policy = all
 
 # Some rules have their own specific config.
-[sqlfluff:rules:L007]  # Keywords
-operator_new_lines = after
+; [sqlfluff:rules:L007]  # Keywords
 
 [sqlfluff:rules:L010]  # Keywords
 capitalisation_policy = upper
