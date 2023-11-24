@@ -1,5 +1,104 @@
 version: '3'
 services:
+    webserver:
+        build:
+            context: .
+            dockerfile: local/airflow.dockerfile
+        working_dir: /airflow
+        container_name: webserver
+        user: airflow
+        restart: always
+        env_file: local/.env
+        depends_on:
+            - postgres
+            - redis
+            - dbtpostgres
+        ports:
+            - 8080:8080
+        volumes:
+            - ./airflow/dags:/airflow/dags
+            - ./airflow/custom_operators:/airflow/custom_operators
+            - ./dwh:/airflow/dwh
+        command: |
+            bash -c "./wait_for_it.sh postgres:5432 -- echo 'done waiting for postgres' &&
+            ./wait_for_it.sh dbtpostgres:5432 -- echo 'done waiting for dbtpostgres' &&
+            source ./airflow_venv/bin/activate &&
+            cd dwh &&
+            dbt seed --vars '{\"ds_nodash\":\"\"}' &&
+            cd .. &&
+            airflow db init &&
+            airflow users create --role Admin --username admin --email admin@dairflow.com --firstname admin --lastname admin --password admin &&
+            airflow webserver"
+    
+    scheduler:
+        build:
+            context: .
+            dockerfile: local/airflow.dockerfile
+        working_dir: /airflow
+        container_name: scheduler
+        user: airflow
+        restart: always
+        env_file: local/.env
+        depends_on:
+            - webserver
+        volumes:
+            - ./airflow/dags:/airflow/dags
+            - ./airflow/custom_operators:/airflow/custom_operators
+            - ./dwh:/airflow/dwh
+        command: ./wait_for_it.sh webserver:8080 -- airflow scheduler
+    
+    flower:
+        build:
+            context: .
+            dockerfile: local/airflow.dockerfile
+        working_dir: /airflow
+        container_name: flower
+        user: airflow
+        restart: always
+        depends_on:
+            - postgres
+            - redis
+            - webserver
+        ports:
+            - 5555:5555
+        command: ./wait_for_it.sh webserver:8080 -- airflow celery flower
+
+    docs:
+        build:
+            context: .
+            dockerfile: local/docs.dockerfile
+        working_dir: /docs/dwh
+        container_name: docs
+        user: docs
+        restart: always
+        env_file: local/.env
+        depends_on:
+            - dbtpostgres
+        ports:
+            - 8000:8000
+        volumes:
+            - ./dwh:/docs/dwh
+        command: |
+            bash -c "../wait_for_it.sh dbtpostgres:5432 -- dbt docs generate --vars '{\"ds_nodash\":\"\",\"ds\":\"\"}' &&
+            dbt docs serve --port 8000"
+
+    worker:
+        build:
+            context: .
+            dockerfile: local/airflow.dockerfile
+        working_dir: /airflow
+        user: airflow
+        restart: always
+        env_file: local/.env
+        depends_on:
+            - scheduler
+            - flower
+        volumes:
+            - ./airflow/dags:/airflow/dags
+            - ./airflow/custom_operators:/airflow/custom_operators
+            - ./dwh:/airflow/dwh
+        command: ./wait_for_it.sh flower:5555 -- airflow celery worker
+    
     postgres:
         image: postgres:13
         container_name: postgres
@@ -12,21 +111,21 @@ services:
         expose:
             - 5432
         volumes:
-            - 'db_data:/var/lib/postgresql/data'
+            - db_data:/var/lib/postgresql/data
 
     dbtpostgres:
         image: postgres:13
         container_name: dbtpostgres
         restart: always
         environment:
-            - POSTGRES_USER=dbt
+            - POSTGRES_USER=first_last
             - POSTGRES_PASSWORD=example_pw
             - POSTGRES_HOST=postgres
-            - POSTGRES_DB=dbt
+            - POSTGRES_DB=first_last
         ports:
             - 5432:5432
         volumes:
-            - 'dbt_data:/var/lib/postgresql/data'
+            - dbt_data:/var/lib/postgresql/data
 
     redis:
         image: redis:6.0
@@ -85,5 +184,5 @@ services:
         command: sh -c "sleep 10 && airflow celery worker"
 
 volumes:
-    db_data:
-    dbt_data:
+    db_data: null
+    dbt_data: null

@@ -1,14 +1,32 @@
 dwh:
-  target: dev
+  target: "{{ env_var('ENV') }}"
   outputs:
     dev:
       type: postgres
-      host: dbtpostgres
-      user: dbt
-      password: example_pw
-      port: 5432
-      dbname: dbt
-      schema: dev_hturner
+      host: "{{ env_var('DBT_ENV_SECRET_DWH_HOST') }}"
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_ENV_SECRET_DBT_PW') }}"
+      port: "{{ env_var('DWH_PORT') | as_number }}"
+      dbname: "{{ env_var('DWH_DB') }}"
+      schema: "{{ env_var('DWH_SCHEMA') }}"
+      threads: 2
+    test:
+      type: postgres
+      host: "{{ env_var('DBT_ENV_SECRET_DWH_HOST') }}"
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_ENV_SECRET_DBT_PW') }}"
+      port: "{{ env_var('DWH_PORT') | as_number }}"
+      dbname: "{{ env_var('DWH_DB') }}"
+      schema: "{{ env_var('DWH_SCHEMA') }}"
+      threads: 2
+    prod:
+      type: postgres
+      host: "{{ env_var('DBT_ENV_SECRET_DWH_HOST') }}"
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_ENV_SECRET_DBT_PW') }}"
+      port: "{{ env_var('DWH_PORT') | as_number }}"
+      dbname: "{{ env_var('DWH_DB') }}"
+      schema: "{{ env_var('DWH_SCHEMA') }}"
       threads: 2
 
     prod:

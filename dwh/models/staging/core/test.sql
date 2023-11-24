@@ -1,7 +1,7 @@
 {{
     config(
         materialized='table',
-        alias='agg_users_stage_' + var('ds_nodash'),
+        alias='agg_users_stage_' + var('ds_nodash'), 
     )
 }}
 
@@ -17,9 +17,9 @@ SELECT
 FROM {{ ref('users') }} AS a
 LEFT JOIN {{ ref('sessions') }} AS b
     ON a.user_id = b.user_id
-    AND DATE_TRUNC('day', b.created_at) <= '{{ var('ds') }}'
+        AND DATE_TRUNC('day', b.created_at) <= '{{ var('ds') }}'
 LEFT JOIN {{ ref('payments') }} AS c
     ON a.user_id = c.user_id
-    AND DATE_TRUNC('day', c.created_at) <= '{{ var('ds') }}'
+        AND DATE_TRUNC('day', c.created_at) <= '{{ var('ds') }}'
 WHERE DATE_TRUNC('day', a.created_at) <= '{{ var('ds') }}'
 GROUP BY 1, 2, 3, 4, 5

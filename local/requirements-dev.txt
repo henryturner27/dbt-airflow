@@ -1,0 +1,6 @@
+-r ../requirements.txt
+
+autopep8==1.6.0
+flake8==4.0.1
+sqlfluff==1.4.5
+sqlfluff-templater-dbt==1.4.5

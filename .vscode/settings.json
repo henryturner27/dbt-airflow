@@ -1,0 +1,24 @@
+{
+    "python.defaultInterpreterPath": "airflow_venv/bin/python",
+    "python.languageServer": "Pylance",
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": [
+        "--max-line-length=90"
+    ],
+    "editor.formatOnSave": true,
+    "python.formatting.provider": "autopep8",
+    "python.formatting.autopep8Args": [
+        "--max-line-length=90",
+        "--aggressive",
+        "--aggressive"
+    ],
+    "python.envFile": "${workspaceFolder}/local.env",
+    "sqlfluff.dialect": "postgres",
+    "sqlfluff.executablePath": "${workspaceFolder}/airflow_venv/bin/sqlfluff",
+    "sqlfluff.linter.run": "onType",
+    "sqlfluff.format.enabled": true,
+    "[sql]": {
+        "editor.formatOnSave": false
+    }
+}

@@ -1,0 +1,2 @@
+# All files will have LF line endings on checkout to support Docker.
+* text eol=lf
