@@ -38,25 +38,9 @@ services:
         expose:
             - 6379
 
-    flower:
-        build: .
-        container_name: flower
-        image: henryturner27/airflow
-        user: airflow
-        restart: always
-        environment:
-            - EXECUTOR=CeleryExecutor
-        depends_on:
-            - postgres
-            - redis
-        ports:
-            - 5555:5555
-        command: sh -c "sleep 10 && airflow celery flower"
-
     webserver:
         build: .
         container_name: webserver
-        image: henryturner27/airflow
         user: airflow
         restart: always
         environment:
@@ -74,7 +58,6 @@ services:
     scheduler:
         build: .
         container_name: scheduler
-        image: henryturner27/airflow
         user: airflow
         restart: always
         environment:
@@ -88,7 +71,6 @@ services:
 
     worker:
         build: .
-        image: henryturner27/airflow
         user: airflow
         restart: always
         environment:

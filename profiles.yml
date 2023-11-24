@@ -10,3 +10,13 @@ dwh:
       dbname: dbt
       schema: dev_hturner
       threads: 2
+
+    prod:
+      type: postgres
+      host: dbtpostgres
+      user: dbt
+      password: example_pw
+      port: 5432
+      dbname: dbt
+      schema: prod
+      threads: 2

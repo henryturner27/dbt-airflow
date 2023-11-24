@@ -1,6 +1,10 @@
 *.pyc
 *.vscode
+venv/
 /dwh/target
+/dwh/prod_target/*
 /dwh/dbt_packages
 /dwh/logs
 /logs
+
+!.gitkeep
