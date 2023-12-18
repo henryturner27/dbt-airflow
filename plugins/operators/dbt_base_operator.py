@@ -9,7 +9,7 @@ from airflow.utils.operator_helpers import context_to_airflow_vars
 class DBTBaseOperator(BaseOperator):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)
-        self.cwd = '/airflow/dwh'
+        self.cwd = '/airflow/plugins/dbt'
         self.output_encoding: str = 'utf-8'
         self.skip_exit_code: int = 99
 

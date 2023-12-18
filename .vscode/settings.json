@@ -2,7 +2,7 @@
     "python.defaultInterpreterPath": "venv/bin/python",
     "python.languageServer": "Pylance",
     "editor.formatOnSave": true,
-    "python.envFile": "${workspaceFolder}/local.env",
+    "python.envFile": "${workspaceFolder}/cfg/local/.env",
     "[sql]": {
         "editor.formatOnSave": false
     }

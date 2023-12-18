@@ -1,6 +1,7 @@
 {{
     config(
         materialized='incremental',
+        schema='core',
         unique_key='dt',
         on_schema_change='sync_all_columns',
     )

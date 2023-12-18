@@ -2,14 +2,13 @@ from json import dumps
 from typing import Dict
 
 from airflow.exceptions import AirflowException, AirflowSkipException
-from custom_operators.dbt_base_operator import DBTBaseOperator
+from operators.dbt_base_operator import DBTBaseOperator
 
 
-class DBTTestOperator(DBTBaseOperator):
-    def __init__(self, dbt_model: str, dbt_args: Dict[str, str] = {}, **kwargs) -> None:
+class DBTDocsOperator(DBTBaseOperator):
+    def __init__(self, dbt_args: Dict[str, str] = {}, **kwargs) -> None:
         super().__init__(**kwargs)
         self.dbt_args = dbt_args
-        self.dbt_model = dbt_model
 
     def execute(self, context):
         dbt_args = dumps({'ds': context['ds'],
@@ -20,7 +19,7 @@ class DBTTestOperator(DBTBaseOperator):
             command=[
                 'bash',
                 '-c',
-                f'dbt test -m {self.dbt_model} --store-failures --vars \'{dbt_args}\'',
+                f'dbt docs generate --vars \'{dbt_args}\'',
             ],
             env=env,
             output_encoding=self.output_encoding,

@@ -3,12 +3,12 @@ services:
     webserver:
         build:
             context: .
-            dockerfile: local/airflow.dockerfile
+            dockerfile: cfg/local/airflow.dockerfile
         working_dir: /airflow
         container_name: webserver
         user: airflow
         restart: always
-        env_file: local/.env
+        env_file: cfg/local/.env
         depends_on:
             - postgres
             - redis
@@ -16,14 +16,13 @@ services:
         ports:
             - 8080:8080
         volumes:
-            - ./airflow/dags:/airflow/dags
-            - ./airflow/custom_operators:/airflow/custom_operators
-            - ./dwh:/airflow/dwh
+            - ./dags:/airflow/dags
+            - ./plugins:/airflow/plugins
         command: |
             bash -c "source ./airflow_venv/bin/activate &&
-            cd dwh &&
+            cd plugins/dbt &&
             dbt seed --vars '{\"ds_nodash\":\"\"}' &&
-            cd .. &&
+            cd ../.. &&
             airflow db init &&
             airflow users create --role Admin --username dev --email admin@dairflow.com --firstname dev --lastname lastname --password dev &&
             airflow webserver"
@@ -31,53 +30,52 @@ services:
     scheduler:
         build:
             context: .
-            dockerfile: local/airflow.dockerfile
+            dockerfile: cfg/local/airflow.dockerfile
         working_dir: /airflow
         container_name: scheduler
         user: airflow
         restart: always
-        env_file: local/.env
+        env_file: cfg/local/.env
         depends_on:
             - webserver
         volumes:
-            - ./airflow/dags:/airflow/dags
-            - ./airflow/custom_operators:/airflow/custom_operators
-            - ./dwh:/airflow/dwh
+            - ./dags:/airflow/dags
+            - ./plugins:/airflow/plugins
         command: bash -c "source ./airflow_venv/bin/activate && airflow scheduler"
 
     docs:
         build:
             context: .
-            dockerfile: local/docs.dockerfile
-        working_dir: /docs/dwh
+            dockerfile: cfg/local/docs.dockerfile
+        working_dir: /docs
         container_name: docs
         user: docs
         restart: always
-        env_file: local/.env
+        env_file: cfg/local/.env
         depends_on:
             - dbtpostgres
         ports:
             - 8000:8000
         volumes:
-            - ./dwh:/docs/dwh
+            - ./dags:/docs/dags
+            - ./plugins:/docs/plugins
         command: |
-            bash -c "dbt docs generate --vars '{\"ds_nodash\":\"\", \"ds\":\"\"}' &&
-            dbt docs serve --port 8000"
+            bash -c "dbt docs generate --profiles-dir plugins/dbt --project-dir plugins/dbt --vars '{\"ds_nodash\":\"\", \"ds\":\"\"}' &&
+            dbt docs serve --profiles-dir plugins/dbt --project-dir plugins/dbt --port 8000"
 
     worker:
         build:
             context: .
-            dockerfile: local/airflow.dockerfile
+            dockerfile: cfg/local/airflow.dockerfile
         working_dir: /airflow
         user: airflow
         restart: always
-        env_file: local/.env
+        env_file: cfg/local/.env
         depends_on:
             - scheduler
         volumes:
-            - ./airflow/dags:/airflow/dags
-            - ./airflow/custom_operators:/airflow/custom_operators
-            - ./dwh:/airflow/dwh
+            - ./dags:/airflow/dags
+            - ./plugins:/airflow/plugins
         command: bash -c "source ./airflow_venv/bin/activate && airflow celery worker"
 
     postgres:

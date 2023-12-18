@@ -1,6 +1,7 @@
 {{
     config(
         materialized='table',
+        schema='core_stage',
         alias='agg_users_stage_' + var('ds_nodash'),
     )
 }}

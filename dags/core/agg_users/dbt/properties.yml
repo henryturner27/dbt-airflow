@@ -2,6 +2,26 @@
 version: 2
 
 models:
+  - name: agg_users
+    description: Calculates some aggregations at the user level
+    columns:
+      - name: dt
+        description: Date of concern
+      - name: user_id
+        description: id of the user
+      - name: first_name
+        description: First name of the user
+      - name: last_name
+        description: Last name of the user
+      - name: country_code
+        description: The initial counntry code recorded for a user
+      - name: session_count
+        description: Total number of sessions for that user up to that date
+      - name: total_revenue
+        description: Total amount of revenue generated for that user up to that date
+      # - name: first_last
+      #   description: First and last name of the user
+
   - name: agg_users_stage
     description: Calculates some aggregations at the user level
     columns:

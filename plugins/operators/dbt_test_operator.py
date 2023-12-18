@@ -2,10 +2,10 @@ from json import dumps
 from typing import Dict
 
 from airflow.exceptions import AirflowException, AirflowSkipException
-from custom_operators.dbt_base_operator import DBTBaseOperator
+from operators.dbt_base_operator import DBTBaseOperator
 
 
-class DBTRunOperator(DBTBaseOperator):
+class DBTTestOperator(DBTBaseOperator):
     def __init__(self, dbt_model: str, dbt_args: Dict[str, str] = {}, **kwargs) -> None:
         super().__init__(**kwargs)
         self.dbt_args = dbt_args
@@ -20,7 +20,7 @@ class DBTRunOperator(DBTBaseOperator):
             command=[
                 'bash',
                 '-c',
-                f'dbt run -m {self.dbt_model} --vars \'{dbt_args}\'',
+                f'dbt test -m {self.dbt_model} --store-failures --vars \'{dbt_args}\'',
             ],
             env=env,
             output_encoding=self.output_encoding,
@@ -28,10 +28,10 @@ class DBTRunOperator(DBTBaseOperator):
         )
         if self.skip_exit_code is not None and result.exit_code == self.skip_exit_code:
             raise AirflowSkipException(
-                f'Bash command returned exit code {self.skip_exit_code}. Skipping.')
+                f'DBT command returned exit code {self.skip_exit_code}. Skipping.')
         elif result.exit_code != 0:
             raise AirflowException(
-                f'''Bash command failed.
+                f'''DBT command failed.
                  The command returned a non-zero exit code {result.exit_code}.'''
             )
         return result.output
